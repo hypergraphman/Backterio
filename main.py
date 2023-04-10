@@ -3,14 +3,15 @@ import pygame
 from copy import deepcopy
 from bacteria import Bacteria
 
-PERCENTAGE_OF_FOOD = 100
-START_BACTERIA = 10
-EDA = 10000
-FOOD = 10
+PERCENTAGE_OF_FOOD = 10
+START_BACTERIA = 100
+EDA = 1000
+FOOD = 7
 WIDTH = 253
 HEIGHT = 131
 cell_size = 5
 clock = pygame.time.Clock()
+
 
 class Area:
     def __init__(self, width, height, cell_size):

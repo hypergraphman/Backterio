@@ -4,7 +4,7 @@ from copy import deepcopy
 
 MAX_LIFETIME = 500
 MIN_LIFETIME = 500
-MAX_ENERGY = 800
+MAX_ENERGY = 200
 MIN_ENERGY = 100
 NORTH = 0
 WEST = 1
@@ -12,6 +12,7 @@ SOUTH = 2
 EAST = 3
 
 N_DIRECTION = 4
+
 
 class Bacteria:
     def __init__(self, x, y, chromosome, code, field):
@@ -35,7 +36,7 @@ class Bacteria:
         field[self.y][self.x] = 0
 
         self.lifetime -= 1
-        self.energy += 1 + (6 if len(field) // 3 < self.y < len(field) // 3 * 2 else 0)
+        self.energy += 1 + (6 if 100 < self.y < 110 else 0)
         # Деление
         if self.energy >= self.max_energy:
             for _ in range(2):
@@ -137,9 +138,10 @@ class Bacteria:
                             self.lifetime = MAX_LIFETIME
                             b.is_alive = False
                     elif b.energy < self.energy:
+                        self.energy += 10
                         b.is_alive = False
                     else:
-                        self.energy += 10
+                        b.energy += 10
                         self.is_alive = False
                         break
                 self.energy -= 1
