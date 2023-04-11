@@ -4,9 +4,9 @@ from copy import deepcopy
 from bacteria import Bacteria
 
 PERCENTAGE_OF_FOOD = 10
-START_BACTERIA = 100
-EDA = 1000
-FOOD = 7
+START_BACTERIA = 50
+EDA = 10000
+FOOD = 10
 WIDTH = 253
 HEIGHT = 131
 cell_size = 5
@@ -21,11 +21,16 @@ class Area:
         self.all_bacteria = []
         self.field = [[0] * width for _ in range(height)]
         self.code = 0
+        self.st = 0
+        self.end = 40
         self.generator()
 
     def create_food(self, n):
         for _ in range(n):
-            self.field[randint(0, self.height - 1)][randint(0, self.width - 1)] = FOOD
+            y = randint(0, self.height - 1)
+            x = randint(0, self.width - 1)
+            if isinstance(self.field[y][x], int):
+                self.field[y][x] = FOOD
 
     def generator(self):
         self.create_food(self.height * self.width * PERCENTAGE_OF_FOOD // 100)
@@ -37,6 +42,10 @@ class Area:
             self.all_bacteria.append(bacteria)
 
     def render(self, scr):
+        pygame.draw.rect(scr, 'Yellow', (0, self.st * self.cell_size, len(self.field[0]) * self.cell_size, 40 * self.cell_size))
+        if self.st > self.end:
+            pygame.draw.rect(scr, 'Yellow',
+                             (0, 0, len(self.field[0]) * self.cell_size, self.end * self.cell_size))
         for x in range(self.width):
             for y in range(self.height):
                 if self.field[y][x] == FOOD:
@@ -46,9 +55,28 @@ class Area:
             pygame.draw.rect(scr, bacteria.color, (bacteria.x * self.cell_size + 1,
                         bacteria.y * self.cell_size + 1, self.cell_size - 1, self.cell_size - 1))
 
+
+    def compare(self, st, end, t):
+        return  st < t < end
+
+    def not_compare(self, st, end, t):
+        return  end > t or t > st
+
     def next_move(self):
+        self.st += 0.125
+        self.end += 0.125
+        st = int(self.st) % len(self.field)
+        end = int(self.end) % len(self.field)
+        if self.st > len(self.field):
+            self.st = 0
+        if self.end > len(self.field):
+            self.end = 0
+        if self.st < self.end:
+            comp = self.compare
+        else:
+            comp = self.not_compare
         for bacteria in self.all_bacteria:
-            bacteria.move(self.all_bacteria, self.field)
+            bacteria.move(self.all_bacteria, self.field, 6 if comp(st, end, bacteria.y) else 0)
             # if isinstance(self.field[bacteria.y][bacteria.x], int):
             #     bacteria.energy += self.field[bacteria.y][bacteria.x]
             # elif self.field[bacteria.y][bacteria.x] != bacteria and abs(bacteria.code - self.field[bacteria.y][bacteria.x].code) > 3:
@@ -69,7 +97,7 @@ class Area:
 
 
 pygame.init()
-
+font = pygame.font.Font(None, 24)
 w, h = WIDTH, HEIGHT
 screen = pygame.display.set_mode([cell_size * w, cell_size * h])
 pygame.display.set_caption('Backterio')
@@ -83,6 +111,12 @@ while running:
     screen.fill('White')
     area.render(screen)
     area.next_move()
+    score_text = font.render(f'st : {area.st}', True, (0, 0, 0))
+    screen.blit(score_text, (10, 10))
+    score_text = font.render(f'end: {area.end}', True, (0, 0, 0))
+    screen.blit(score_text, (10, 25))
+    score_text = font.render(f'bac: {len(area.all_bacteria)}', True, (0, 0, 0))
+    screen.blit(score_text, (10, 50))
     pygame.display.flip()
     clock.tick(20)
 pygame.quit()

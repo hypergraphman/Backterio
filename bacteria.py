@@ -32,11 +32,11 @@ class Bacteria:
         self.color = s % 256**3 - 100 * 256**2 - 100 * 256
         # self.color = 'Red'
 
-    def move(self, all_bacteria, field):
+    def move(self, all_bacteria, field, photosynthesis):
         field[self.y][self.x] = 0
 
         self.lifetime -= 1
-        self.energy += 1 + (6 if 100 < self.y < 110 else 0)
+        self.energy += 1 + photosynthesis
         # Деление
         if self.energy >= self.max_energy:
             for _ in range(2):
@@ -138,10 +138,9 @@ class Bacteria:
                             self.lifetime = MAX_LIFETIME
                             b.is_alive = False
                     elif b.energy < self.energy:
-                        self.energy += 10
                         b.is_alive = False
                     else:
-                        b.energy += 10
+                        self.energy += 10
                         self.is_alive = False
                         break
                 self.energy -= 1
