@@ -3,10 +3,10 @@ import pygame
 from copy import deepcopy
 from bacteria import Bacteria
 
-PERCENTAGE_OF_FOOD = 10
+PERCENTAGE_OF_FOOD = 0
 START_BACTERIA = 50
-EDA = 10000
-FOOD = 10
+EDA = 1000000
+FOOD = 50
 WIDTH = 253
 HEIGHT = 131
 cell_size = 5
@@ -42,10 +42,14 @@ class Area:
             self.all_bacteria.append(bacteria)
 
     def render(self, scr):
-        pygame.draw.rect(scr, 'Yellow', (0, self.st * self.cell_size, len(self.field[0]) * self.cell_size, 40 * self.cell_size))
         if self.st > self.end:
-            pygame.draw.rect(scr, 'Yellow',
-                             (0, 0, len(self.field[0]) * self.cell_size, self.end * self.cell_size))
+            pygame.draw.rect(scr, 'Yellow', (
+                0, 0, len(self.field[0]) * self.cell_size, self.end * self.cell_size))
+            pygame.draw.rect(scr, 'Yellow', (
+                0, self.st * self.cell_size, len(self.field[0]) * self.cell_size, len(self.field) * self.cell_size))
+        else:
+            pygame.draw.rect(scr, 'Yellow', (
+                0, self.st * self.cell_size, len(self.field[0]) * self.cell_size, abs(self.st - self.end) * self.cell_size))
         for x in range(self.width):
             for y in range(self.height):
                 if self.field[y][x] == FOOD:
@@ -55,16 +59,15 @@ class Area:
             pygame.draw.rect(scr, bacteria.color, (bacteria.x * self.cell_size + 1,
                         bacteria.y * self.cell_size + 1, self.cell_size - 1, self.cell_size - 1))
 
-
     def compare(self, st, end, t):
-        return  st < t < end
+        return st < t < end
 
     def not_compare(self, st, end, t):
-        return  end > t or t > st
+        return end > t or t > st
 
     def next_move(self):
-        self.st += 0.125
-        self.end += 0.125
+        self.st += 0.05
+        self.end += 0.15
         st = int(self.st) % len(self.field)
         end = int(self.end) % len(self.field)
         if self.st > len(self.field):
